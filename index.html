@@ -1,0 +1,64 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div id="all">
+            <video autoplay playsinline id="video" width="640" height="480" style="display: none;"></video>
+            <canvas id="canvas" width="640" height="480">
+            <img id="mag" src="./mag.png" style="display: none;">
+        </div>
+        <script defer >
+            const localVideo = document.querySelector( "video" );
+            const canvasCtx  = document.querySelector('#canvas').getContext('2d');
+            const mag  = document.querySelector('#mag');
+
+            function main(){
+                //. 画面サイズ取得
+                const sw = window.parent.screen.width;
+                const sh = window.parent.screen.height;
+                const x = Math.floor( 480 * sw / sh );
+                localVideo.style.width = x;
+                const mediaStreamConstraints = { video: true };
+                navigator.mediaDevices.getDisplayMedia( mediaStreamConstraints ).then( gotLocalMediaStream ).catch( handleLocalMediaStreamError );
+
+                // canvas
+                document.querySelector('#canvas').style.width = localVideo.style.width;
+                document.querySelector('#canvas').style.height = localVideo.style.height;
+                _canvasUpdate();
+
+            }
+
+            function gotLocalMediaStream( mediaStream ){
+                localVideo.srcObject = mediaStream;
+            }
+                
+            function handleLocalMediaStreamError( error ){
+                console.log( "navigator.getUserMedia error: ", error );
+            }
+            function _canvasUpdate() {
+                canvasCtx.drawImage(localVideo, 0, 0, canvas.width, canvas.height);
+                canvasCtx.drawImage(mag, 0, 0, canvas.width, canvas.height);
+                requestAnimationFrame(_canvasUpdate);
+            }
+            
+            main();
+            </script>
+            <style>
+            html, body {
+              width: 100%;
+              height: 100%;
+              padding: 0px;
+              margin: 0px;
+              background: linear-gradient(70deg, #000000, #444444);
+            }
+            #all{
+                display: flex;
+                flex-direction: column; 
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+            }
+            </style>
+    </body>
+</html>
